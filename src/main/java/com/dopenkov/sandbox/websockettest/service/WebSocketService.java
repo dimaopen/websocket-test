@@ -16,29 +16,48 @@
  */
 package com.dopenkov.sandbox.websockettest.service;
 
-import javax.websocket.CloseReason;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import com.dopenkov.sandbox.websockettest.protocol.*;
 
-@ServerEndpoint("/messages")
+import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.websocket.*;
+import javax.websocket.server.ServerEndpoint;
+import java.util.logging.Logger;
+
+@ServerEndpoint(value = "/messages", encoders = {JsonMessageEncoder.class}, decoders = {JsonMessageDecoder.class})
 public class WebSocketService {
+    @Inject
+    private Logger log;
+
+    @EJB
+    private UserService userService;
 
     @OnMessage
-    public String sayHello(String name) {
-        System.out.println("Say hello to '" + name + "'");
-        return ("Hello " + name + " from websocket endpoint");
+    public Message onMessage(Message msg) {
+        if (msg.getSequenceId() == null) {
+            return new ErrorMessage(ErrorMessage.CUSTOMER_ERROR_MESSAGE_TYPE, msg.getSequenceId(),
+                    "No sequence id in message", ErrorMessage.NO_SEQUENCE_ID_CODE);
+        }
+        if (msg instanceof LoginMessage) {
+            LoginMessage loginMessage = (LoginMessage) msg;
+            return userService.authenticate(loginMessage.getEmail(), loginMessage.getPassword())
+                    .<Message>map(t -> new TokenMessage(msg.getSequenceId(), t.getId().toString(), t.getExpirationDate()))
+                    .orElse(
+                            new ErrorMessage(ErrorMessage.CUSTOMER_ERROR_MESSAGE_TYPE, msg.getSequenceId(), "Customer not found"
+                                    , ErrorMessage.CUSTOMER_NOT_FOUND_CODE)
+                    );
+        }
+        return new ErrorMessage(ErrorMessage.CUSTOMER_ERROR_MESSAGE_TYPE, msg.getSequenceId(),
+                "Unsupported message", ErrorMessage.UNSUPPORTED_MESSAGE_CODE);
     }
 
     @OnOpen
     public void helloOnOpen(Session session) {
-        System.out.println("WebSocket opened: " + session.getId());
+        log.info("WebSocket opened: " + session.getId());
     }
 
     @OnClose
-    public void helloOnClose(CloseReason reason) {
-        System.out.println("WebSocket connection closed with CloseCode: " + reason.getCloseCode());
+    public void helloOnClose(Session session, CloseReason reason) {
+        log.info("WebSocket closed: " + reason.getCloseCode());
     }
 }

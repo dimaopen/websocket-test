@@ -1,5 +1,6 @@
 package com.dopenkov.sandbox.websockettest.service;
 
+import com.dopenkov.sandbox.websockettest.model.Token;
 import com.dopenkov.sandbox.websockettest.model.User;
 import com.dopenkov.sandbox.websockettest.repository.UserRepository;
 
@@ -11,6 +12,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -20,23 +22,31 @@ import java.util.Optional;
 public class UserService {
     @EJB
     private UserRepository userRepository;
+    @EJB
+    private TokenService tokenService;
 
     @PostConstruct
     public void init() {
         final Optional<User> user1 = userRepository.findByLogin("fpi@bk.ru");
-        if (!user1.isPresent()) {
-            userRepository.store(createUser("fpi@bk.ru", "123123"));
-        }
+        user1.orElseGet(() -> createUser("fpi@bk.ru", "123123"));
     }
 
     public User createUser(String loginName, String password) throws EntityExistsException {
+        Objects.requireNonNull(loginName, "loginName must not be null");
+        Objects.requireNonNull(password, "password must not be null");
         final Optional<User> userOptional = userRepository.findByLogin(loginName);
         if (userOptional.isPresent()) {
             throw new EntityExistsException("User with login " + loginName + " already exists.");
         }
         final User user = new User(loginName, hash(password));
-        userRepository.store(user);
-        return user;
+        return userRepository.store(user);
+    }
+
+    public Optional<Token> authenticate(String loginName, String password) {
+        final Optional<User> byLogin = userRepository.findByLogin(loginName);
+        byLogin.ifPresent(u -> tokenService.discardAllTokensForUser(u));
+        return userRepository.findByLoginAndPassword(loginName, hash(password)).
+                map(u -> tokenService.issueNewTokenForUser(u));
     }
 
     public Optional<User> findByLogin(String loginName) {
@@ -44,6 +54,9 @@ public class UserService {
     }
 
     public String hash(String password) {
+        if (password == null) {
+            return null;
+        }
         MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-256");

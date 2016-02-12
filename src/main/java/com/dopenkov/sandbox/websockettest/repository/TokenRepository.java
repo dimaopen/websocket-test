@@ -1,6 +1,7 @@
 package com.dopenkov.sandbox.websockettest.repository;
 
 import com.dopenkov.sandbox.websockettest.model.Token;
+import com.dopenkov.sandbox.websockettest.model.User;
 
 import java.util.UUID;
 
@@ -22,4 +23,6 @@ public interface TokenRepository {
      * @param token the <code>Token</code> to save
      */
     void store(Token token);
+
+    int discardAllTokensForUser(User user);
 }

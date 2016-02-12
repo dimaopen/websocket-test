@@ -1,0 +1,6 @@
+{
+  "type": "LOGIN_CUSTOMER",
+  "data": {
+    "email": "fpi@bk.ru"
+  }
+}

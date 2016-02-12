@@ -30,7 +30,7 @@ import java.util.Set;
 @NamedQueries({
     @NamedQuery(name = User.FIND_BY_LOGIN_NAME, query = "SELECT u FROM User u WHERE u.loginName = :loginName"),
     @NamedQuery(name = User.FIND_BY_LOGIN_NAME_AND_PASSWORD, query = "SELECT u FROM User u " +
-            "WHERE u.loginName = :loginname AND u.userPasswordHash = :pwdHash")
+            "WHERE u.loginName = :loginName AND u.userPasswordHash = :pwdHash")
 })
 public class User implements Serializable {
 

@@ -16,6 +16,7 @@
 package com.dopenkov.sandbox.websockettest.repository.jpa;
 
 import com.dopenkov.sandbox.websockettest.model.Token;
+import com.dopenkov.sandbox.websockettest.model.User;
 import com.dopenkov.sandbox.websockettest.repository.TokenRepository;
 
 import javax.ejb.Stateless;
@@ -46,6 +47,12 @@ public class JpaTokenRepositoryImpl implements TokenRepository {
         } else {
             this.em.merge(token);
         }
+    }
+
+    @Override
+    public int discardAllTokensForUser(User user) {
+        return em.createNamedQuery(Token.DISCARD_TOKENS)
+                .setParameter("user", user).executeUpdate();
     }
 
 }

@@ -1,0 +1,8 @@
+{
+  "type": "LOGIN_CUSTOMER",
+  "sequence_id": "a29e4fd0-581d-e06b-c837-4f5f4be7dd18",
+  "data": {
+    "email": "fpi@bk.ru",
+    "password": 123123
+  }
+}

@@ -38,5 +38,5 @@ public interface UserRepository {
      *
      * @param user the <code>User</code> to save
      */
-    void store(User user);
+    User store(User user);
 }

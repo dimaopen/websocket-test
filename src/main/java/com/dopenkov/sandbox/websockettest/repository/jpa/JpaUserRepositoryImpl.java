@@ -64,11 +64,12 @@ public class JpaUserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void store(User user) {
+    public User store(User user) {
         if (user.getId() == null) {
             this.em.persist(user);
+            return user;
         } else {
-            this.em.merge(user);
+            return this.em.merge(user);
         }
     }
 

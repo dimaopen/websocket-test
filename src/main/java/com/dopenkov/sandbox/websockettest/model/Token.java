@@ -26,9 +26,14 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "token")
+@NamedQueries({
+    @NamedQuery(name = Token.DISCARD_TOKENS, query = "UPDATE Token t SET t.valid = false WHERE t.user = :user")
+})
+
 public class Token implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    public static final String DISCARD_TOKENS = "Token.discartTokens";
 
     @Id
     @GeneratedValue(generator = "uuid")
