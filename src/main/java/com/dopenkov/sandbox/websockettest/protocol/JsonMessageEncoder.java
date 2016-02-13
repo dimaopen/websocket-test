@@ -10,6 +10,7 @@ import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 import java.io.StringWriter;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 /**
  * @author Dmitry Openkov
@@ -20,11 +21,10 @@ public class JsonMessageEncoder implements Encoder.Text<Message> {
 
     @Override
     public String encode(Message msg) throws EncodeException {
-        final JsonObjectBuilder data = builderFactory.createObjectBuilder();
         final JsonObjectBuilder jsonBuilder = builderFactory.createObjectBuilder()
                 .add(JsonMessageDecoder.TYPE, msg.getType())
-                .add(JsonMessageDecoder.SEQUENCE_ID, msg.getSequenceId())
-                .add(JsonMessageDecoder.DATA, data);
+                .add(JsonMessageDecoder.SEQUENCE_ID, msg.getSequenceId());
+        final JsonObjectBuilder data = builderFactory.createObjectBuilder();
         switch (msg.getType()) {
             case ErrorMessage.CUSTOMER_ERROR_MESSAGE_TYPE:
                 data.add("error_description", ((ErrorMessage) msg).getErrorDescription());
@@ -32,14 +32,15 @@ public class JsonMessageEncoder implements Encoder.Text<Message> {
                 break;
             case TokenMessage.MESSAGE_TYPE:
                 data.add("api_token", ((TokenMessage) msg).getToken());
-                data.add("api_token_expiration_date", ((TokenMessage) msg).getExpirationDate().format(DateTimeFormatter.ISO_INSTANT));
+                data.add("api_token_expiration_date", ((TokenMessage) msg).getExpirationDate()
+                        .truncatedTo(ChronoUnit.SECONDS).format(DateTimeFormatter.ISO_INSTANT));
                 break;
             default:
                 throw new EncodeException(msg, "Unknown message type: " + msg.getType());
         }
         StringWriter stWriter = new StringWriter();
         JsonWriter jsonWriter = Json.createWriter(stWriter);
-        jsonWriter.writeObject(jsonBuilder.build());
+        jsonWriter.writeObject(jsonBuilder.add(JsonMessageDecoder.DATA, data.build()).build());
         jsonWriter.close();
         return stWriter.toString();
     }

@@ -22,6 +22,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Entity
@@ -62,8 +63,8 @@ public class Token implements Serializable {
     }
 
     public Token(OffsetDateTime issueDate, OffsetDateTime expirationDate, User user) {
-        this.issueDate = issueDate;
-        this.expirationDate = expirationDate;
+        this.issueDate = issueDate.truncatedTo(ChronoUnit.SECONDS);
+        this.expirationDate = expirationDate.truncatedTo(ChronoUnit.SECONDS);
         this.user = user;
         this.valid = true;
     }

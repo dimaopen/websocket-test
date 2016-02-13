@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -56,7 +57,7 @@ public class JpaTokenRepositoryImplTest {
 
     @Test
     public void testFindById() throws Exception {
-        final OffsetDateTime beforeIssue = OffsetDateTime.now();
+        final OffsetDateTime beforeIssue = OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         testStore();
         assertNotNull(tokenId);
         final Token found = jpaTokenRepository.findById(tokenId);
