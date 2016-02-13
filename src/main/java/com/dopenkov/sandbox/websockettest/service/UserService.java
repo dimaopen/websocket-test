@@ -7,6 +7,7 @@ import com.dopenkov.sandbox.websockettest.repository.UserRepository;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
+import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +15,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * @author Dmitry Openkov
@@ -22,12 +24,17 @@ import java.util.Optional;
 public class UserService {
     @EJB
     private UserRepository userRepository;
+
     @EJB
     private TokenService tokenService;
+
+    @Inject
+    private Logger log;
 
     @PostConstruct
     public void init() {
         final Optional<User> user1 = userRepository.findByLogin("fpi@bk.ru");
+        user1.ifPresent(user -> log.info("User fpi@bk.ru exists"));
         user1.orElseGet(() -> createUser("fpi@bk.ru", "123123"));
     }
 
@@ -43,6 +50,7 @@ public class UserService {
     }
 
     public Optional<Token> authenticate(String loginName, String password) {
+        log.info(() -> "Authenticate " + loginName);
         final Optional<User> byLogin = userRepository.findByLogin(loginName);
         byLogin.ifPresent(u -> tokenService.discardAllTokensForUser(u));
         return userRepository.findByLoginAndPassword(loginName, hash(password)).

@@ -51,6 +51,5 @@ public class JsonMessageEncoder implements Encoder.Text<Message> {
 
     @Override
     public void destroy() {
-        throw new UnsupportedOperationException("Not implemented");
     }
 }

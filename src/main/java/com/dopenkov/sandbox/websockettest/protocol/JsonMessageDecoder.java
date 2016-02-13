@@ -1,10 +1,12 @@
 package com.dopenkov.sandbox.websockettest.protocol;
 
+import javax.inject.Inject;
 import javax.json.*;
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 import java.io.StringReader;
+import java.util.logging.Logger;
 
 /**
  * @author Dmitry Openkov
@@ -15,6 +17,8 @@ public class JsonMessageDecoder implements Decoder.Text<Message> {
     public static final String SEQUENCE_ID = "sequence_id";
     public static final String EMAIL = "email";
     public static final String PASSWORD = "password";
+    @Inject
+    private Logger log;
 
     @Override
     public Message decode(String msg) throws DecodeException {
@@ -36,6 +40,7 @@ public class JsonMessageDecoder implements Decoder.Text<Message> {
                     throw new DecodeException(msg, "Unknown message type: " + type);
             }
         } catch (NullPointerException | JsonException | ClassCastException e) {
+            log.warning(() -> "Cannot decode the following message:\n" + msg);
             throw new DecodeException(msg, "Illegal message format", e);
         }
     }

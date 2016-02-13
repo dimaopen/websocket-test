@@ -19,12 +19,14 @@ package com.dopenkov.sandbox.websockettest.service;
 import com.dopenkov.sandbox.websockettest.protocol.*;
 
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.logging.Logger;
 
 @ServerEndpoint(value = "/messages", encoders = {JsonMessageEncoder.class}, decoders = {JsonMessageDecoder.class})
+@Stateless
 public class WebSocketService {
     @Inject
     private Logger log;
