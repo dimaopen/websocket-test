@@ -5,7 +5,22 @@ Author: Dmitry Openkov
 What is it?
 -----------
 
+This is a test task made during job appliance. **It's not done yet.**
 The `websocket-test` demonstrates authentication of users via WebSocket.
+
+Main use case: **user authentication**
+1. Client app sends a websocket request LOGIN_CUSTOMER.
+2. App validates the user name/password against the user DB.
+3.
+    1. If successful app returns token message with expiration date.
+    2. If not app returns error message.
+
+Other features:
+1. user token DB
+2. History of user tokens.
+3. Discard user token in case of subsequent authentication.
+
+
 
 System requirements
 -------------------
