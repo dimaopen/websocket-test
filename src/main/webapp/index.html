@@ -44,7 +44,7 @@
             if (websocket !== null) {
                 var msg = {
                     "type": "LOGIN_CUSTOMER",
-                    "sequence_id": "a29e4fd0-581d-e06b-c837-4f5f4be7dd18",
+                    "sequence_id": guid(),
                     "data": {
                         "email": document.getElementById('name').value,
                         "password": document.getElementById('pwd').value
@@ -65,6 +65,17 @@
         function displayStatus(status) {
             var currentStatus = document.getElementById('currentstatus');
             currentStatus.value = status;
+        }
+
+        function guid() {
+            function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000)
+                        .toString(16)
+                        .substring(1);
+            }
+
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                    s4() + '-' + s4() + s4() + s4();
         }
 
     </script>

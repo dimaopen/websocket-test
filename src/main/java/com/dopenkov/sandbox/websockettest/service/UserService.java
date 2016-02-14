@@ -50,7 +50,6 @@ public class UserService {
     }
 
     public Optional<Token> authenticate(String loginName, String password) {
-        log.info(() -> "Authenticate " + loginName);
         final Optional<User> byLogin = userRepository.findByLogin(loginName);
         byLogin.ifPresent(u -> tokenService.discardAllTokensForUser(u));
         return userRepository.findByLoginAndPassword(loginName, hash(password)).
