@@ -55,6 +55,19 @@ public class JsonMessageEncoderTest {
         assertTrue(Pattern.compile("\"error_code\"\\s*:\\s*\"customer.notFound\"").matcher(msgJson).find());
     }
 
+    @Test
+    public void testEncodeErrorMessageWithEmptySequenceId() throws EncodeException {
+        final JsonMessageEncoder encoder = createEncoder();
+        final String msgJson = encoder.encode(new ErrorMessage(ErrorMessage.CUSTOMER_ERROR_MESSAGE_TYPE, null
+                , "error description", ErrorMessage.CUSTOMER_NOT_FOUND_CODE));
+        System.out.println("msgJson = " + msgJson);
+        assertTrue(msgJson.startsWith("{"));
+        assertTrue(Pattern.compile("\"type\"\\s*:\\s*\"CUSTOMER_ERROR\"").matcher(msgJson).find());
+        assertTrue(Pattern.compile("\"sequence_id\"\\s*:\\s*\"\"").matcher(msgJson).find());
+        assertTrue(Pattern.compile("\"error_description\"\\s*:\\s*\"error description\"").matcher(msgJson).find());
+        assertTrue(Pattern.compile("\"error_code\"\\s*:\\s*\"customer.notFound\"").matcher(msgJson).find());
+    }
+
     private JsonMessageEncoder createEncoder() {
         final JsonMessageEncoder jsonMessageEncoder = new JsonMessageEncoder();
         final JsonBuilderFactory builderFactory = Json.createBuilderFactory(Collections.EMPTY_MAP);

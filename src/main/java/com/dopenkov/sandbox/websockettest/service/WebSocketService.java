@@ -23,7 +23,11 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @ServerEndpoint(value = "/messages", encoders = {JsonMessageEncoder.class}, decoders = {JsonMessageDecoder.class})
 @Stateless
@@ -53,13 +57,31 @@ public class WebSocketService {
                 "Unsupported message", ErrorMessage.UNSUPPORTED_MESSAGE_CODE);
     }
 
+    @OnError
+    public void onError(Session session, Throwable error) {
+        if (error instanceof DecodeException) {
+            //extract sequence_id if possible
+            final Matcher m = Pattern.compile("\\(sequence_id=([\\w-]+)\\)").matcher(error.getMessage());
+            String sequenceId = m.find() ? m.group(1) : "no_sequence_id";
+            try {
+                session.getBasicRemote().sendObject(new ErrorMessage(ErrorMessage.CUSTOMER_ERROR_MESSAGE_TYPE, sequenceId,
+                    error.getMessage(), ErrorMessage.UNSUPPORTED_MESSAGE_CODE));
+            } catch (IOException e) {
+                log.log(Level.WARNING, "Cannot send message to client", e);
+            } catch (EncodeException e) {
+                //hardly happen
+                log.log(Level.SEVERE, "Cannot encode error message", e);
+            }
+        }
+    }
+
     @OnOpen
-    public void helloOnOpen(Session session) {
+    public void onOpen(Session session) {
         log.info("WebSocket opened: " + session.getId());
     }
 
     @OnClose
-    public void helloOnClose(Session session, CloseReason reason) {
+    public void onClose(Session session, CloseReason reason) {
         log.info("WebSocket closed: " + reason.getCloseCode());
     }
 }

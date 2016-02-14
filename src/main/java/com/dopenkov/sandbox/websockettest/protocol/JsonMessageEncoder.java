@@ -23,7 +23,7 @@ public class JsonMessageEncoder implements Encoder.Text<Message> {
     public String encode(Message msg) throws EncodeException {
         final JsonObjectBuilder jsonBuilder = builderFactory.createObjectBuilder()
                 .add(JsonMessageDecoder.TYPE, msg.getType())
-                .add(JsonMessageDecoder.SEQUENCE_ID, msg.getSequenceId());
+                .add(JsonMessageDecoder.SEQUENCE_ID, convertToEmptyStringIfNull(msg.getSequenceId()));
         final JsonObjectBuilder data = builderFactory.createObjectBuilder();
         switch (msg.getType()) {
             case ErrorMessage.CUSTOMER_ERROR_MESSAGE_TYPE:
@@ -43,6 +43,10 @@ public class JsonMessageEncoder implements Encoder.Text<Message> {
         jsonWriter.writeObject(jsonBuilder.add(JsonMessageDecoder.DATA, data.build()).build());
         jsonWriter.close();
         return stWriter.toString();
+    }
+
+    private String convertToEmptyStringIfNull(String str) {
+        return str == null ? "" : str;
     }
 
     @Override

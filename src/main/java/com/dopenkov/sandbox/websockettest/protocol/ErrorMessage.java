@@ -1,5 +1,7 @@
 package com.dopenkov.sandbox.websockettest.protocol;
 
+import java.util.Objects;
+
 /**
  * @author Dmitry Openkov
  */
@@ -13,6 +15,8 @@ public class ErrorMessage extends Message {
 
     public ErrorMessage(String type, String sequenceId, String errorDescription, String errorCode) {
         super(type, sequenceId);
+        Objects.requireNonNull(errorDescription, "error description must be presented");
+        Objects.requireNonNull(errorCode, "error code must be presented");
         this.errorDescription = errorDescription;
         this.errorCode = errorCode;
     }
