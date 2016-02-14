@@ -7,7 +7,7 @@
         var websocket = null;
 
         function connect() {
-            var wsURI = 'ws://' + window.location.host + '/websocket-test/messages';
+            var wsURI = 'ws://' + removeProtocol(removeLastPart(window.location.href)) + '/messages';
             websocket = new WebSocket(wsURI);
 
             websocket.onopen = function () {
@@ -76,6 +76,19 @@
 
             return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
                     s4() + '-' + s4() + s4() + s4();
+        }
+
+        function removeLastPart(url) {
+            var lastSlashIndex = url.lastIndexOf("/");
+            if (lastSlashIndex > url.indexOf("/") + 1) { // if not in http://
+                return url.substr(0, lastSlashIndex); // cut it off
+            } else {
+                return url;
+            }
+        }
+
+        function removeProtocol(url) {
+            return url.replace(/.*?:\/\//g, "");
         }
 
     </script>
