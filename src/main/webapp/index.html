@@ -7,7 +7,7 @@
         var websocket = null;
 
         function connect() {
-            var wsURI = 'ws://' + removeProtocol(removeLastPart(window.location.href)) + '/messages';
+            var wsURI = 'ws://' + removeProtocol(removeLastPart(window.location.href)) + ':8000/messages';
             websocket = new WebSocket(wsURI);
 
             websocket.onopen = function () {
@@ -97,7 +97,7 @@
 
 <div>
     <h1>Websocket test</h1>
-    <div>This is a simple example of a WebSocket authentication.</div>
+    <div>This is a simple example of a WebSocket authentication. Valid credentials are fpi@bk.ru/123123.</div>
     <div id="connect-container">
         <div>
             <fieldset>

@@ -5,8 +5,9 @@ Author: Dmitry Openkov
 What is it?
 -----------
 
-This is a test task made during job appliance. **It's not done yet.**
-The `websocket-test` demonstrates authentication of users via WebSocket.
+This is a test task made during job appliance. The `websocket-test` demonstrates authentication of users via WebSocket.
+An instance of this application is deployed on [http://app1-dimaopen.rhcloud.com/] (http://app1-dimaopen.rhcloud.com/).
+If the Service is 503 Temporarily Unavailable then try reloading the page. 
 
 Main use case: **user authentication**
 
@@ -18,7 +19,7 @@ Main use case: **user authentication**
 
 Other features:
 
-1. user token DB
+1. User token data base.
 2. History of user tokens.
 3. Discard user token in case of subsequent authentication.
 
